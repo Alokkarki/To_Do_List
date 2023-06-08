@@ -61,15 +61,21 @@ public class UpdateTodo extends AppCompatActivity {
 
         fragment_todo_txt_date = findViewById(R.id.fragment_todo_txt_date);
 
-
         update = findViewById(R.id.todo_btn_Update);
         intent = getIntent();
 
-
         fragment_todo_txt_title.setText(intent.getStringExtra("todotitle"));
         fragment_todo_txtDescription.setText(intent.getStringExtra("description"));
-        fragment_todo_chk_complete.isChecked();
+        fragment_todo_chk_complete.setChecked(intent.getBooleanExtra("isComplete", false));
 
+        // Retrieve the date from the intent extras
+        long todoDateMillis = intent.getLongExtra("todoDate", 0);
+        if (todoDateMillis > 0) {
+            Date todoDate = new Date(todoDateMillis);
+            DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            String todoDateStr = formatter.format(todoDate);
+            fragment_todo_txt_date.setText(todoDateStr);
+        }
 
         fragment_todo_txt_date.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,15 +84,14 @@ public class UpdateTodo extends AppCompatActivity {
             }
         });
 
-
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 saveData();
             }
         });
     }
+
 
     private void saveData() {
 
@@ -97,26 +102,32 @@ public class UpdateTodo extends AppCompatActivity {
         try {
             todoDateOn = formatter.parse(fragment_todo_txt_date.getText().toString());
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            Toast.makeText(UpdateTodo.this, "Please choose date", Toast.LENGTH_SHORT).show();
         }
 //                todo.setTodoDate(todoDateOn);
         Date UpdateOn = new Date();
 //                todo.setCreatedOn(UpdateOn);
+        String UpdateTitle=fragment_todo_txt_title.getText().toString();
+        String UpdateDesc= fragment_todo_txtDescription.getText().toString();
 
         boolean isComplete = fragment_todo_chk_complete.isChecked();
+        if(UpdateDesc.isEmpty() || UpdateTitle.isEmpty() || fragment_todo_txt_date.getText().toString().trim().equals("Pick Date")){
+            Toast.makeText(UpdateTodo.this, "Please Insert Details", Toast.LENGTH_SHORT).show();
+        } else if (UpdateDesc.isEmpty()) {
+            Toast.makeText(UpdateTodo.this, "Please Insert Description", Toast.LENGTH_SHORT).show();
+        } else if (UpdateTitle.isEmpty()) {
+            Toast.makeText(UpdateTodo.this, "Please Insert Title", Toast.LENGTH_SHORT).show();
+        }else if (fragment_todo_txt_date.getText().toString().trim().equals("Date")) {
+            Toast.makeText(UpdateTodo.this, "Please Insert date", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            todoViewModel.ChangeTodo(intent.getIntExtra("id", 1), UpdateTitle,UpdateDesc , todoDateOn, isComplete,UpdateOn);
+            Toast.makeText(UpdateTodo.this, "Updated", Toast.LENGTH_SHORT).show();
+            scrollView.setVisibility(View.GONE);
 
-        todoViewModel.ChangeTodo(intent.getIntExtra("id", 1), fragment_todo_txt_title.getText().toString(), fragment_todo_txtDescription.getText().toString(), todoDateOn, isComplete,UpdateOn);
-
-        Toast.makeText(UpdateTodo.this, "Updated", Toast.LENGTH_SHORT).show();
-
-        scrollView.setVisibility(View.GONE);
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.updateActivity, CategoryListFragment.class, null)
-                .addToBackStack("CategoryList")
-                .setReorderingAllowed(true)
-                .commit();
+            Intent intent1= new Intent(getApplicationContext(),MainActivity.class);
+            startActivity(intent1);
+        }
     }
 
 

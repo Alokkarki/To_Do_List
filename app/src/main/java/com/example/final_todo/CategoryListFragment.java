@@ -45,6 +45,7 @@ public class CategoryListFragment extends Fragment implements CategoryAdaptor.On
             @Override
             public void onChanged(List<Category> categories) {
                 categoryAdaptor.setCategoryList(categories);
+                categoryAdaptor.notifyDataSetChanged();
             }
         });
 

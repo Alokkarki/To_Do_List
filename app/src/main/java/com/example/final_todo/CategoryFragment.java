@@ -40,7 +40,7 @@ public class CategoryFragment extends Fragment {
                     Toast.makeText(getActivity(), "Category Saved", Toast.LENGTH_SHORT).show();
                     ((MainActivity) getActivity()).replaceFragmentCategoryList();
                 }else {
-                    Toast.makeText(getActivity().getApplicationContext(), "category value cannot be inserted null", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity().getApplicationContext(), "Category Value Cannot Be inserted null", Toast.LENGTH_SHORT).show();
                 }
 
             }
